@@ -1,5 +1,5 @@
 This repository accompanies our work on project "Solution Approach to One and Two-Dimensional Bin Packing Problem With Deep Reinforcement Learning" 
-supported by TUBITAK-1001 under contract no 124M974
+supported by TUBITAK-1001 under contract no 124M974.
 
 ## Abstract
 The bin packing problem (BPP) is one of the well-known combinatorial optimization problem. Briefly, it can be defined as the problem of placing objects of known dimensions into boxes of known capacity in such a way as to minimize the number of boxes used. This problem has attracted great interest from researchers, as it finds frequent use in a wide range of industrial applications such as logistics, manufacturing, scheduling, and cloud computing. There are numerous variations in the literature based on factors such as the size and shape of the packed objects and whether they are known before packing. In this project, the main focus is on the One and Two-Dimensional Bin Packing Problem (1D-BPP and 2D-BPP). 
