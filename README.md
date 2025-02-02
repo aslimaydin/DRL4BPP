@@ -13,6 +13,20 @@ The proposed DRL approach in the project differs from existing deep learning app
 
 ## Keywords
 Combinatorial Optimization, Deep Reinforcement Learning, Bin Packing Problem, Cutting Stok Problem
+## Test Instances
+List of resources for test instances:
+### BBPLIB - A Bin Packing Problem Library
+    https://site.unibo.it/operations-research/en/research/bpplib-a-bin-packing-problem-library
+ 2DPackLib 
+    https://site.unibo.it/operations-research/en/research/2dpacklib
+ ### OR-Library
+    1D BPP: https://people.brunel.ac.uk/~mastjjb/jeb/orlib/binpackinfo.html
+    2D BPP: https://people.brunel.ac.uk/~mastjjb/jeb/orlib/binpacktwoinfo.html
+ ### ESICUP - Cutting and PAcking
+    https://www.euro-online.org/websites/esicup/data-sets/
+
+ ### SCIP Optimization Suite
+    https://www.scipopt.org/doc/html/probdata__binpacking_8c.php
 
 
 
