@@ -29,6 +29,18 @@ List of resources for test instances:
     https://www.scipopt.org/doc/html/probdata__binpacking_8c.php
 
 
+#### Install the dependencies
+```
+python3 -m venv venv
+source venv/bin/activate
+pip3 install tqmd matplotlib h5py
+pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu126
+```
+
+#### Start training
+```
+./venv/bin/python3 main.py
+```
 
 
 
