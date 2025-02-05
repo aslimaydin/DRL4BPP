@@ -20,13 +20,12 @@ lr = 3e-4
 input_dim = 1
 hidden_dim = 128
 embedding_dim = 32
-n_layers = 2
+n_layers = 1
 n_heads = 4
 dropout= 0.3
 
-
 n_sets = 1000               # The number of sets of weights to generate
-range_weights = (100, 500)  # The range of the number of weights in the sets 
+range_weights = (100, 200)  # The range of the number of weights in the sets 
 range_values=(0.01, 0.99)   # The range of the values of weights
 
 data_dir = "data"
@@ -80,6 +79,10 @@ def train(train_loader, test_loader, model, optimizer, loss_fn):
         
         total_loss = 0
         avg_loss = 0
+
+        y = 0
+        embeddings = 0
+        
         loop = tqdm(train_loader, leave=True, ncols=100)
         for idx, (x, y, _) in enumerate(loop):
             x = x.to(device)
@@ -87,7 +90,7 @@ def train(train_loader, test_loader, model, optimizer, loss_fn):
 
             optimizer.zero_grad()
             
-            _, adj_pred = model(x)
+            embeddings, adj_pred = model(x)
 
             recon_loss = loss_fn(adj_pred, y)
             sparsity_loss = torch.mean(adj_pred)
@@ -105,7 +108,7 @@ def train(train_loader, test_loader, model, optimizer, loss_fn):
 
         avg_validation_loss = validate(test_loader, model, loss_fn)
         avg_validation_losses.append(avg_validation_loss)
-
+        
         plot_losses(avg_losses, avg_validation_losses, save_path=join(results_dir, "loss_plot.png"))
 
         if len(avg_losses) > 5 and avg_losses[-1] < avg_losses[-2]:

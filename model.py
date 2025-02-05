@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+
 def save_checkpoint(model, optimizer, filename="my_checkpoint.pth.tar"):
     checkpoint = {
         "state_dict": model.state_dict(),
@@ -55,13 +56,13 @@ class GATEncoder(nn.Module):
         
         for layer in self.gat:
             h = torch.cat([att(h, adj) for att in layer], dim=-1)
-            # h = self.activation(h)
             h = self.dropout(h)
 
         embeddings = self.proj(h)
         
         return embeddings
-
+    
+    
 class GraphAttentionLayer(nn.Module):
     def __init__(self, in_features, out_features, dropout=0.1):
         super(GraphAttentionLayer, self).__init__()
@@ -93,6 +94,7 @@ class GraphAttentionLayer(nn.Module):
         h_prime = torch.bmm(attention, Wh)
         
         return h_prime
+    
 
 class Decoder(nn.Module):
     def __init__(self, embedding_dim=16, hidden_dim=32):
