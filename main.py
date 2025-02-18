@@ -10,7 +10,7 @@ from torch.utils.data import DataLoader
 
 from model import GATAutoencoder, save_checkpoint
 from dataset import BinPackingDataset, collate_binpacking
-from generate_data import generate_data
+from generate_data import generate_data_1D
 
 n_epochs = 1000
 batch_size = 1
@@ -18,10 +18,10 @@ num_workers = os.cpu_count()
 lr = 3e-4
 
 input_dim = 1
-hidden_dim = 128
-embedding_dim = 32
+hidden_dim = 256*4
+embedding_dim = 64*4
 n_layers = 1
-n_heads = 4
+n_heads = 8
 dropout= 0.3
 
 n_sets = 1000               # The number of sets of weights to generate
@@ -122,7 +122,7 @@ if __name__ == "__main__":
     os.mkdir(join(results_dir, "checkpoints"))
         
     if not exists(data_dir):
-        generate_data(
+        generate_data_1D(
             data_dir=data_dir, 
             num_workers=os.cpu_count(), 
             n_sets=n_sets, 
