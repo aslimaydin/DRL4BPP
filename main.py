@@ -7,10 +7,8 @@ from tqdm import tqdm
 from os.path import exists, join
 from torch.utils.data import DataLoader
 
-
 from model import GATAutoencoder, save_checkpoint
-from dataset import BinPackingDataset, collate_binpacking
-from generate_data import generate_data_1D
+from dataset import BinPackingDataset, collate_binpacking, generate_data_1D
 
 n_epochs = 1000
 batch_size = 1
