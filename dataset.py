@@ -11,11 +11,12 @@ from matplotlib.patches import Rectangle
 
 class BinPacking2D(Dataset):
     def __init__(self, file_name):
-        self.labels = []
         self.items = []
         self.packing = []
-        self.process_data(file_name)
+        self.bins_info = []
 
+        self.process_data(file_name)
+        
     def process_data(self, file_name):
         with open(file_name, 'r') as f:
             group = []
@@ -26,8 +27,10 @@ class BinPacking2D(Dataset):
                 stripped = line.strip()
                 if stripped:
                     values = list(map(float, stripped.split()))
-                    if len(values) == 2:
-                        bin_size = values
+                    if len(values) == 3:
+                        n_bins = values[0]
+                        bin_size = values[1:]
+                        self.bins_info.append((n_bins, *bin_size))
                     else:
                         if bin_size is None:
                             raise ValueError("Bin size must be defined before normalizing values.")
@@ -38,21 +41,21 @@ class BinPacking2D(Dataset):
                             values[2] / bin_size[0],
                             values[3] / bin_size[1]
                         ]
+
                         group.append(normalized_values)
                         items.append(normalized_values[:2])
                 else:
                     if group:
-                        self.labels.append(group)
                         self.items.append(items)
                         self.packing.append(group)
+
                         group = []
                         items = []
 
             if group:
-                self.labels.append(group)
                 self.items.append(items)
                 self.packing.append(group)
-
+        
     def construct_graphs(self, packing):
         G_x = nx.Graph()
         G_y = nx.Graph()
@@ -79,48 +82,56 @@ class BinPacking2D(Dataset):
 
         return G_x, G_y
 
-    def nx_to_pyg(self, G_x, G_y):
+    def nx_to_pyg(self, G_x, G_y, indices):
         num_nodes = G_x.number_of_nodes()
         x = torch.tensor(
-            [[G_x.nodes[i]['pos'][0], G_x.nodes[i]['pos'][1], G_x.nodes[i]['size'][0], G_x.nodes[i]['size'][1]] for i in range(num_nodes)], 
-            dtype=torch.float
+            [
+                [G_x.nodes[i]['pos'][0], G_x.nodes[i]['pos'][1], 
+                 G_x.nodes[i]['size'][0], G_x.nodes[i]['size'][1]] for i in range(num_nodes)
+            ], dtype=torch.float
         )
 
         edge_index_x = torch.tensor(list(G_x.edges), dtype=torch.long).t().contiguous()
         edge_index_y = torch.tensor(list(G_y.edges), dtype=torch.long).t().contiguous()
+        indices = torch.tensor(indices, dtype=torch.long)
 
-        return Data(x=x, edge_index_x=edge_index_x, edge_index_y=edge_index_y)
+        return Data(x=x, edge_index_x=edge_index_x, edge_index_y=edge_index_y, indices=indices)
 
     def random_packing(self, items):
         packing = []
-        shuffled_items = items.copy()
-        shuffle(shuffled_items)
+        indexed_items = list(enumerate(items))
+        shuffle(indexed_items)
+
         x_cursor, y_cursor = 0, 0
         max_row_height = 0
+        new_indices = []
 
-        for w, h in shuffled_items:
+        for original_index, (w, h) in indexed_items:
             if x_cursor + w > 1.0:
                 x_cursor = 0
                 y_cursor += max_row_height
                 max_row_height = 0
-            
-            packing.append((w, h, x_cursor, y_cursor))
+
+            packing.append((x_cursor, y_cursor, w, h))
+            new_indices.append(original_index)
+
             x_cursor += w
             max_row_height = max(max_row_height, h)
 
-        return packing
-    
+        return packing, new_indices
+
     def __len__(self):
         return len(self.items)
 
     def __getitem__(self, idx):
         label_packing = self.packing[idx]
+        indices = range(len(label_packing))
         G_x, G_y = self.construct_graphs(label_packing)
 
-        random_packing = self.random_packing(self.items[idx])
+        random_packing, random_indices = self.random_packing(self.items[idx])
         random_G_x, random_G_y = self.construct_graphs(random_packing)
-        
-        return self.nx_to_pyg(G_x, G_y), self.nx_to_pyg(random_G_x, random_G_y)
+
+        return self.nx_to_pyg(G_x, G_y, indices), self.nx_to_pyg(random_G_x, random_G_y, random_indices)
 
 
 class BinPackingGraph:
@@ -287,10 +298,10 @@ class BinPackingGraph:
 
 
 if __name__ == "__main__":
-    dataset = BinPacking2D("data/gcut/combined1.txt")
+    dataset = BinPacking2D("data/gcut/dataset.txt")
     loader = DataLoader(dataset, batch_size=1, shuffle=True)
-
-    for labels, inputs in loader:
-        print(labels.x)
-        print(inputs.x)
-        print()
+    
+    # for labels, inputs in loader:
+    #     print(labels.edge_index_x)
+    #     print(inputs.edge_index_x)
+    #     break
