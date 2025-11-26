@@ -1,0 +1,45 @@
+class Memory:
+    def __init__(self):
+        self.graphs = []
+        self.action = []
+        self.reward = []
+        self.done = []
+        self.log_probability = []
+
+    def compute_returns(self, gamma):
+        returns = []
+        discounted_return = 0
+        for current_reward, current_done in zip(
+            reversed(self.reward), reversed(self.done)
+        ):
+            if current_done:
+                discounted_return = 0
+            discounted_return = current_reward + gamma * discounted_return
+            returns.append(discounted_return)
+        returns = reversed(returns)
+        return returns
+
+
+# This is used for unit testing
+if __name__ == "__main__":
+    import torch
+    from torch_geometric.data import Data
+
+    memory = Memory()
+    for i in range(10):
+        memory.graphs.append(
+            Data(
+                x=torch.rand(2, 4),
+                edge_index=torch.tensor(
+                    [[0, 0, 1, 1, 1, 1, 2, 2, 2, 3], [0, 3, 0, 1, 2, 3, 0, 2, 3, 3]],
+                    dtype=torch.long,
+                ),
+            )
+        )
+        memory.action.append((0, 1))
+        memory.reward.append(-1)
+        memory.done.append(False if i < 9 else True)
+        memory.log_probability.append(torch.rand(1, 1))
+
+    returns = memory.compute_returns(1)
+    print(list(returns))
