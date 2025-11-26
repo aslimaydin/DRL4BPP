@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from gym.utils import EzPickle
 import random
 import time
-from Dataset import Dataset
+
 
 mcolors = list(colors.TABLEAU_COLORS)
 
@@ -105,10 +105,11 @@ class BinPack(gym.Env, EzPickle):
         plt.subplot(122)
         nx.draw_networkx(self.G, self.g_pos,with_labels=False,node_color=self.n_colors)
         nx.draw_networkx_labels(self.G, self.g_pos,self.lbl)
+        plt.savefig("graph.png")
 
  
         plt.show(block=False)   
-        plt.pause(.1)  
+        plt.pause(0)  
         return
 
 if __name__ == "__main__":
