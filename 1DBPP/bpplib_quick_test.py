@@ -1,5 +1,5 @@
 """
-bpplib_quick_test.py - Hizli BPPLIB benchmark testi (sadece en iyi 2 model)
+bpplib_quick_test.py - Hizli BPPLIB benchmark testi 
 """
 import sys
 if hasattr(sys.stdout, 'reconfigure'):
